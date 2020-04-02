@@ -4,16 +4,13 @@ library(plotly)
 
 # Define UI for data upload app ----
 ui <- fluidPage(
-  
   # App title ----
   titlePanel("Uploading cleaned IBI Files - with header IBI and times in milliseconds, one per row"),
-  
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
     
     # Sidebar panel for inputs ----
     sidebarPanel(
-      
       # Input: Select a file ----
       fileInput("file1", "Choose CSV File",
                 multiple = FALSE,
@@ -23,27 +20,22 @@ ui <- fluidPage(
       
       # Horizontal line ----
       tags$hr(),
-      
       # Input: Checkbox if file has header ----
       checkboxInput("header", "Header", TRUE),
-      
       # Input: Select separator ----
       radioButtons("sep", "Separator",
                    choices = c(Comma = ",",
                                Semicolon = ";",
                                Tab = "\t"),
                    selected = ","),
-      
       # Input: Select quotes ----
       radioButtons("quote", "Quote",
                    choices = c(None = "",
                                "Double Quote" = '"',
                                "Single Quote" = "'"),
                    selected = '"'),
-      
       # Horizontal line ----
       tags$hr(),
-      
       # Input: Select number of rows to display ----
       radioButtons("disp", "Display",
                    choices = c(Head = "head",
@@ -54,11 +46,11 @@ ui <- fluidPage(
     
     # Main panel for displaying outputs ----
     mainPanel(
-      
+      # print(paste("IBI has: ",nrow(dfIBI)," rows")),
+      # print(paste("IBI has: ",max(dfIBI[1,]$IBI)," rows")),
       # Output: Data file ----
-      tableOutput("contents"),
+      # tableOutput("contents"),
       plotlyOutput("physioIBIplot"),
-      
       tableOutput('HRVtable'),
       plotOutput("powerBandPlot"),
       plotOutput("poincarePlot")
@@ -72,8 +64,8 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   #definition variables functions
-  IBI<-c(999)
-  dfIBI<-data.frame(IBI)
+  # IBI<-c(999)
+  # dfIBI<-data.frame(IBI)
   # print_IBI_data_error_msg <- function() {
   #   msg <- paste("IBI Data not valid for selection. (")
   #   
@@ -119,18 +111,18 @@ server <- function(input, output) {
       }
     )
     
-    if(input$disp == "head") {
-      return(head(dfIBI)
-             )
-      
+    if(is.null(input$file1)){
+      UpdateVisualizations()
+      return(NULL)
     }
     else {
+      UpdateVisualizations()
       return(dfIBI)
     }
       })
   
   
-  
+   UpdateVisualizations<-function(){
   
   eHRV <- ""
   tryCatch({ 
@@ -245,11 +237,8 @@ server <- function(input, output) {
       eHRV <<- cond
     })
 
-  # error=function(e) {
-  #   stop(safeError(e))
-  # }
   
-
+}
 
     
   #server function  
